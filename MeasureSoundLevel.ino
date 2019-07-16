@@ -10,6 +10,7 @@
 #define LEDPIN 13
 
 int sensorValue, maxValue, minValue, peaktopeak;
+long timeCounter;
 float soundLevel;   // measured in decibels
 
 void setup() {
@@ -19,6 +20,7 @@ void setup() {
   pinMode(INPUTPIN, INPUT); 
   pinMode(LEDPIN, OUTPUT);
   sensorValue = 0;
+  timeCounter = 0L;
 }
 
 void loop() {
@@ -34,12 +36,15 @@ void loop() {
     }
   }
   
+  timeCounter = (timeCounter <= 0) ? 0 : timeCounter - INTERVAL;
+  
   peaktopeak = abs(maxValue - minValue);
   soundLevel = map(peaktopeak, 20, 900, 49.5, 90);
   if (soundLevel > 75) {
     digitalWrite(LEDPIN, HIGH);
+    timeCounter = 5000;           // reset counter
   }
-  else {
+  else if (timeCounter <= 0) {
     digitalWrite(LEDPIN, LOW);
   }
   
